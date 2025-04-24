@@ -2,33 +2,156 @@
 
 namespace App\Services\Auth;
 
+use App\Http\Resources\UserResource;
+use Illuminate\Support\Facades\Hash;
 use LaravelEasyRepository\ServiceApi;
 use App\Repositories\Auth\AuthRepository;
+use App\Repositories\User\UserRepository;
 
 class AuthServiceImplement extends ServiceApi implements AuthService{
 
     /**
-     * set title message api for CRUD
-     * @param string $title
-     */
-     protected string $title = "";
-     /**
-     * uncomment this to override the default message
-     * protected string $create_message = "";
-     * protected string $update_message = "";
-     * protected string $delete_message = "";
+     * AuthServiceImplement provides authentication and user management services.
+     *
+     * This service handles user authentication, registration, login, logout,
+     * and password reset functionalities using Laravel's authentication mechanisms.
+     * It implements the AuthService interface and extends the ServiceApi base class.
      */
 
-     /**
-     * don't change $this->mainRepository variable name
-     * because used in extends service class
-     */
-     protected AuthRepository $mainRepository;
+     protected UserRepository $userRepository;
 
-    public function __construct(AuthRepository $mainRepository)
+    public function __construct(UserRepository $userRepository)
     {
-      $this->mainRepository = $mainRepository;
+      $this->userRepository = $userRepository;
     }
 
-    // Define your custom methods :)
+    /**
+	 * Register a new user and generate an authentication token.
+	 *
+	 * @param mixed $request The validated registration request containing user details
+	 * @return \Illuminate\Http\JsonResponse Registration response with user details and token
+	 */
+
+     public function register($request):AuthServiceImplement
+     {
+        try {
+
+			$validated = $request->validated();
+
+			$user = $this->userRepository->createUser($validated);
+
+			// Generate Sanctum token
+			$token = $user->createToken('auth_token')->plainTextToken;
+
+			return $this->setCode(200)
+				->setMessage("Registration Successfull")
+				->setData([
+					'user' => new UserResource($user),
+					'token' => $token,
+				]);
+
+
+
+		} catch (\Exception $e) {
+			return $this->setCode(400)
+				->setMessage("Registration Failed")
+				->setError($e->getMessage());
+		}
+     }
+
+
+     public function login($request): AuthServiceImplement
+	{
+		try {
+			$validated = $request->validated();
+			$user = $this->userRepository->findUserByEmail($validated['email']);
+
+
+			if (!$user || !Hash::check($validated['password'], $user->password)) {
+				return $this->setCode(401)->setMessage("Invalid credentials");
+			}
+
+			// Revoke old tokens (optional)
+			$user->tokens()->delete();
+
+			// Generate Sanctum token
+			$token = $user->createToken('auth_token')->plainTextToken;
+
+			return $this->setCode(200)
+				->setMessage("Login Success")
+				->setData([
+					'user' => new UserResource($user),
+                    'role' => $user->getRoleNames(),
+					'token' => $token
+				]);
+		} catch (\Exception $e) {
+			return $this->setCode(400)
+				->setMessage("Login Failed")
+				->setError($e->getMessage());
+		}
+	}
+
+    public function logout($request): AuthServiceImplement
+	{
+		try {
+			$request->user()->currentAccessToken()->delete();
+			return $this->setCode(200)
+				->setMessage("Logout Successfull");
+
+		} catch (\Exception $e) {
+			return $this->setCode(400)
+				->setMessage("Logout Failed")
+				->setError($e->getMessage());
+		}
+	}
+
+    public function adminLogin($request): AuthServiceImplement
+	{
+		try {
+			$validated = $request->validated();
+			$user = $this->userRepository->findUserByEmail($validated['email']);
+
+			if (!$user || !Hash::check($validated['password'], $user->password)) {
+				return $this->setCode(401)->setMessage("Invalid credentials");
+			}
+
+			if (!$user->hasAnyRole(['admin'])) {
+				return $this->setCode(403)->setMessage("Forbidden");
+			}
+
+			// Revoke old tokens (optional)
+			$user->tokens()->delete();
+
+			// Generate Sanctum token
+			$token = $user->createToken('auth_token')->plainTextToken;
+
+			return $this->setCode(200)
+				->setMessage("Login Success")
+				->setData([
+					'user' => new UserResource($user),
+					'role' => $user->getRoleNames(),
+					// 'permissions' => $user->getAllPermissionNames(),
+					'token' => $token
+				]);
+		} catch (\Exception $e) {
+			return $this->setCode(400)
+				->setMessage("Admin Login Failed")
+				->setError($e->getMessage());
+		}
+	}
+
+    public function adminLogout($request): AuthServiceImplement
+	{
+		try {
+			$request->user()->currentAccessToken()->delete();
+			return $this->setCode(200)
+				->setMessage("Logout Successfull");
+
+		} catch (\Exception $e) {
+			return $this->setCode(400)
+				->setMessage("Logout Failed")
+				->setError($e->getMessage());
+		}
+	}
+
 }
