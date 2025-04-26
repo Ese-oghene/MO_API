@@ -23,7 +23,7 @@ class UserRepositoryImplement extends Eloquent implements UserRepository{
     public function createUser($data)
 
     {
-        // $data['password'] = Hash::make($data['password']);
+       
         return $this->model->create($data);
     }
 
