@@ -77,14 +77,12 @@ class AuthServiceImplement extends ServiceApi implements AuthService{
 			// Generate Sanctum token
 			$token = $user->createToken('auth_token')->plainTextToken;
 
-             // Get the role of the user (first role if multiple roles are present)
-            $role = $user->getRoleNames()->first() ?? 'user'; // default to 'user' if no role is assigned
 
 			return $this->setCode(200)
 				->setMessage("Login Success")
 				->setData([
 					'user' => new UserResource($user),
-                    'role' => $role, // Assign role properly
+                    'role' => $user->role, // Assign role properly
 					'token' => $token
 				]);
 		} catch (\Exception $e) {
@@ -131,8 +129,8 @@ class AuthServiceImplement extends ServiceApi implements AuthService{
 			return $this->setCode(200)
 				->setMessage("Login Success")
 				->setData([
-					'user' => new UserResource($user),
-					'role' => $user->getRoleNames()->first(),
+                    'user' => new UserResource($user),
+					'role' => $user->role,
 					'token' => $token
 				]);
 		} catch (\Exception $e) {

@@ -1,9 +1,11 @@
 <?php
 
 namespace App\Services\Product;
-use App\Http\Resources\ProductResource;
+use App\Models\Category;
 
+use App\Models\SubCategory;
 use LaravelEasyRepository\ServiceApi;
+use App\Http\Resources\ProductResource;
 use App\Repositories\Product\ProductRepository;
 
 class ProductServiceImplement extends ServiceApi implements ProductService{
@@ -34,6 +36,26 @@ class ProductServiceImplement extends ServiceApi implements ProductService{
     public function createProduct(array $data): ProductService
     {
         try {
+
+             // Create or get Category by name
+            $category = Category::firstOrCreate(
+                ['name' => $data['category_name']]
+            );
+
+            // Create or get SubCategory by name + link it to the category
+            $subCategory = SubCategory::firstOrCreate(
+                [
+                    'name' => $data['sub_category_name'],
+                    'category_id' => $category->id,
+                ]
+            );
+
+        // Replace names with actual foreign keys
+            $data['category_id'] = $category->id;
+            $data['sub_category_id'] = $subCategory->id;
+
+            unset($data['category_name'], $data['sub_category_name']); // clean up
+
             $product = $this->productRepository->create($data);
 
             return $this->setCode(201)
