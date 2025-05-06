@@ -19,6 +19,7 @@ use App\Http\Controllers\Api\ProductController;
 //     return $request->user();
 // });
 
+
 Route::post("register", [AuthController::class, "register"])->name("register");
 Route::post("login", [AuthController::class, "login"])->name("login");
 Route::post('/admin/login', [AuthController::class, 'adminLogin'])->name('admin.login');
@@ -44,18 +45,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/index', [ProductController::class, 'index'])->name('admin.index');
         Route::post('/store', [ProductController::class, 'store'])->name('admin.store');
         Route::get('/show/{id}', [ProductController::class, 'show'])->name('admin.show');
-        Route::put('/update/{id}', [ProductController::class, 'update'])->name('admin.update');
+        Route::patch('/update/{id}', [ProductController::class, 'update'])->name('admin.update');
         Route::delete('/delete/{id}', [ProductController::class, 'destroy'])->name('admin.destroy');
     });
 
-
-    // Route::prefix('admin/products')->name('admin.products.')->middleware('role:admin')->group(function () {
-    //     Route::get('/', [ProductController::class, 'index'])->name('index');
-    //     Route::post('/', [ProductController::class, 'store'])->name('store');
-    //     Route::get('/{id}', [ProductController::class, 'show'])->name('show');
-    //     Route::put('/{id}', [ProductController::class, 'update'])->name('update');
-    //     Route::delete('/{id}', [ProductController::class, 'destroy'])->name('destroy');
-    // });
 
 
 });

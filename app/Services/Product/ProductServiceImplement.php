@@ -106,7 +106,29 @@ class ProductServiceImplement extends ServiceApi implements ProductService{
     public function updateProduct(int $id, array $data): ProductService
     {
         try {
-            $product = $this->productRepository->update($id, $data);
+
+            // Handle optional category name
+            if (!empty($data['category_name'])) {
+                $category = Category::firstOrCreate(['name' => $data['category_name']]);
+                $data['category_id'] = $category->id;
+                unset($data['category_name']);
+            }
+
+            if (!empty($data['sub_category_name'])) {
+                $categoryId = $data['category_id'] ?? null;
+
+                // Ensure a valid category_id exists before creating a sub-category
+                if ($categoryId) {
+                    $subCategory = SubCategory::firstOrCreate([
+                        'name' => $data['sub_category_name'],
+                        'category_id' => $categoryId,
+                    ]);
+                    $data['sub_category_id'] = $subCategory->id;
+                    unset($data['sub_category_name']);
+                }
+            }
+
+            $product = $this->productRepository->updateProduct($id, $data);
 
             return $this->setCode(200)
                 ->setMessage("Product Updated Successfully")

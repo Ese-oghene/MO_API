@@ -30,7 +30,7 @@ class ProductRepositoryImplement extends Eloquent implements ProductRepository{
       /**
      * Update a product by ID.
      */
-    public function updateProduct(int $id, array $data)
+    public function updateProduct( $id,  $data)
     {
         $product = $this->model->findOrFail($id);
         $product->update($data);

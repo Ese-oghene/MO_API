@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-use App\Http\Requests\Product\ProductRequest;
+use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\Controller;
 use App\Services\Product\ProductService;
+use App\Http\Requests\Product\ProductRequest;
 use App\Http\Resources\Product\ProductResource;
 use App\Http\Requests\Product\UpdateProductRequest;
 
@@ -49,8 +50,8 @@ class ProductController extends Controller
             $imagePath = $request->file('image')->store('products', 'public');
             $data['image'] = $imagePath;
         }
-        
-        return $this->productService->createProduct($request->validated())->toJson();
+
+        return $this->productService->createProduct($data)->toJson();
     }
 
      /**
@@ -70,7 +71,21 @@ class ProductController extends Controller
      */
     public function update(UpdateProductRequest $request, int $id): JsonResponse
     {
-        return $this->productService->updateProduct($id, $request->validated())->toJson();
+
+        $data = $request->validated();
+        // Log::info('Raw Request (no validation)', $request->all());
+        // return response()->json(['received' => $request->all()]);
+
+        // Log::info('Raw Request Data', $request->all());
+        // Log::info('Validated Data', $request->validated());
+        // Log::info('Update Product Called', ['id' => $id, 'data' => $data]);
+
+    if ($request->hasFile('image')) {
+        $imagePath = $request->file('image')->store('products', 'public');
+        $data['image'] = $imagePath;
+    }
+
+        return $this->productService->updateProduct($id, $data)->toJson();
     }
 
      /**
@@ -82,7 +97,5 @@ class ProductController extends Controller
     {
         return $this->productService->deleteProduct($id)->toJson();
     }
-
-
 
 }

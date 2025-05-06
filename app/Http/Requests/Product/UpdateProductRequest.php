@@ -25,9 +25,12 @@ class UpdateProductRequest extends FormRequest
             'name' => 'sometimes|string|max:255',
             'description' => 'nullable|string',
             'price' => 'sometimes|numeric|min:0',
-            'category_id' => 'sometimes|exists:categories,id',
-            'sub_category_id' => 'nullable|exists:sub_categories,id',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048', // optional, validate image if provided
+            'stock' => 'sometimes|integer|min:0',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'category_name' => 'sometimes|string|max:255',
+            'sub_category_name' => 'nullable|string|max:255',
+            'raw_material' => 'nullable|string',
         ];
     }
 }
+
