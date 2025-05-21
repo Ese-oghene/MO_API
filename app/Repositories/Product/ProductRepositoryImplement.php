@@ -61,4 +61,46 @@ class ProductRepositoryImplement extends Eloquent implements ProductRepository{
         return $this->model->with(['category', 'subCategory'])->get();
     }
 
+    public function getProductsByCategory(int $categoryId)
+    {
+        return Product::with(['category', 'subCategory'])
+            ->where('category_id', $categoryId)
+            ->get();
+    }
+
+    public function getProductsBySubCategory(int $subCategoryId)
+    {
+        return Product::with(['category', 'subCategory'])
+            ->where('sub_category_id', $subCategoryId)
+            ->get();
+    }
+
+
+    public function getProductsByCategoryAndSubCategory(int $categoryId, int $subCategoryId)
+    {
+        return Product::with(['category', 'subCategory'])
+            ->where('category_id', $categoryId)
+            ->where('sub_category_id', $subCategoryId)
+            ->get();
+    }
+
+
+    public function getProductsByCategoryName(string $name)
+    {
+        return Product::whereHas('category', function ($q) use ($name) {
+                    $q->whereRaw('LOWER(name) = ?', [strtolower($name)]);
+                })
+                ->with(['category', 'subCategory'])
+                ->get();
+    }
+
+    public function getProductsBySubCategoryName(string $name)
+    {
+        return Product::whereHas('subCategory', function ($q) use ($name) {
+                    $q->whereRaw('LOWER(name) = ?', [strtolower($name)]);
+                })
+                ->with(['category', 'subCategory'])
+                ->get();
+    }
+
 }

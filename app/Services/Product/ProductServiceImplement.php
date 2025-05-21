@@ -1,8 +1,8 @@
 <?php
 
 namespace App\Services\Product;
-use App\Models\Category;
 
+use App\Models\Category;
 use App\Models\SubCategory;
 use LaravelEasyRepository\ServiceApi;
 use App\Http\Resources\ProductResource;
@@ -50,11 +50,11 @@ class ProductServiceImplement extends ServiceApi implements ProductService{
                 ]
             );
 
-        // Replace names with actual foreign keys
+            // Replace names with actual foreign keys
             $data['category_id'] = $category->id;
             $data['sub_category_id'] = $subCategory->id;
 
-            unset($data['category_name'], $data['sub_category_name']); // clean up
+            unset($data['category_name'], $data['sub_category_name']);
 
             $product = $this->productRepository->create($data);
 
@@ -76,7 +76,9 @@ class ProductServiceImplement extends ServiceApi implements ProductService{
             return $this->setCode(200)
                 ->setMessage("Product List")
                 ->setData(ProductResource::collection($products));
+
         } catch (\Exception $e) {
+
             return $this->setCode(400)
                 ->setMessage("Failed to fetch products")
                 ->setError($e->getMessage());
@@ -133,6 +135,7 @@ class ProductServiceImplement extends ServiceApi implements ProductService{
             return $this->setCode(200)
                 ->setMessage("Product Updated Successfully")
                 ->setData(new ProductResource($product));
+
         } catch (\Exception $e) {
             return $this->setCode(400)
                 ->setMessage("Product Update Failed")
@@ -148,7 +151,6 @@ class ProductServiceImplement extends ServiceApi implements ProductService{
             if (!$deleted) {
                 return $this->setCode(404)->setMessage("Product Not Found or Already Deleted");
             }
-
             return $this->setCode(200)
                 ->setMessage("Product Deleted Successfully");
         } catch (\Exception $e) {
@@ -158,5 +160,91 @@ class ProductServiceImplement extends ServiceApi implements ProductService{
         }
     }
 
-    // Define your custom methods :)
+    public function getPublicProducts(): ProductService
+    {
+        try {
+            $products = $this->productRepository->getAllWithRelations();
+            return $this->setCode(200)
+                ->setMessage("Product List")
+                ->setData(ProductResource::collection($products));
+
+        } catch (\Exception $e) {
+
+            return $this->setCode(400)
+                ->setMessage("Failed to fetch products")
+                ->setError($e->getMessage());
+        }
+    }
+
+
+    public function getProductsByCategoryName(string $name): ProductService
+    {
+        try {
+            $products = $this->productRepository->getProductsByCategoryName($name);
+
+            return $this->setCode(200)
+                ->setMessage("Products by Category Name")
+                ->setData(ProductResource::collection($products));
+
+        } catch (\Exception $e) {
+
+            return $this->setCode(400)
+                ->setMessage("Failed to fetch products by category name")
+                ->setError($e->getMessage());
+        }
+    }
+
+
+    public function getProductsBySubCategoryName(string $name): ProductService
+    {
+        try {
+            $products = $this->productRepository->getProductsBySubCategoryName($name);
+
+            return $this->setCode(200)
+                ->setMessage("Products by SubCategory Name")
+                ->setData(ProductResource::collection($products));
+
+        } catch (\Exception $e) {
+            return $this->setCode(400)
+                ->setMessage("Failed to fetch products by subcategory name")
+                ->setError($e->getMessage());
+        }
+    }
+
+    public function getProductsByCategory(int $categoryId): ProductService
+        {
+            try {
+                $products = $this->productRepository->getProductsByCategory($categoryId);
+
+                return $this->setCode(200)
+                    ->setMessage("Products by Category")
+                    ->setData(ProductResource::collection($products));
+            } catch (\Exception $e) {
+                return $this->setCode(400)
+                    ->setMessage("Failed to fetch products by category")
+                    ->setError($e->getMessage());
+            }
+        }
+
+    public function getProductsBySubCategory(int $subCategoryId): ProductService
+    {
+        try {
+            $products = $this->productRepository->getProductsBySubCategory($subCategoryId);
+
+            return $this->setCode(200)
+                ->setMessage("Products by SubCategory")
+                ->setData(ProductResource::collection($products));
+        } catch (\Exception $e) {
+            return $this->setCode(400)
+                ->setMessage("Failed to fetch products by subcategory")
+                ->setError($e->getMessage());
+        }
+    }
+
+
+
+
+
 }
+
+// 122|jcoZCJv16lnJVtBKfT6KaAYUzLm5K4B438lDi5EEedc8d052

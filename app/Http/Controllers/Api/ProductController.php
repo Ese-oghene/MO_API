@@ -64,6 +64,16 @@ class ProductController extends Controller
         return $this->productService->getProductById($id)->toJson();
     }
 
+      /**
+     * Update Product
+     *
+     * Updates a product’s details.
+     */
+        public function publicIndex(): JsonResponse
+    {
+        return $this->productService->getPublicProducts()->toJson();
+    }
+
     /**
      * Update Product
      *
@@ -73,12 +83,6 @@ class ProductController extends Controller
     {
 
         $data = $request->validated();
-        // Log::info('Raw Request (no validation)', $request->all());
-        // return response()->json(['received' => $request->all()]);
-
-        // Log::info('Raw Request Data', $request->all());
-        // Log::info('Validated Data', $request->validated());
-        // Log::info('Update Product Called', ['id' => $id, 'data' => $data]);
 
     if ($request->hasFile('image')) {
         $imagePath = $request->file('image')->store('products', 'public');
@@ -97,5 +101,29 @@ class ProductController extends Controller
     {
         return $this->productService->deleteProduct($id)->toJson();
     }
+
+    public function getByCategory($id)
+    {
+        return $this->productService->getProductsByCategory($id);
+    }
+
+    public function getBySubCategory($id)
+    {
+    return $this->productService->getProductsBySubCategory($id);
+    }
+
+
+    public function getByCategoryName($name)
+    {
+        return $this->productService->getProductsByCategoryName($name)->toJson();
+    }
+
+    
+    public function getBySubCategoryName($name)
+    {
+        return $this->productService->getProductsBySubCategoryName($name)->toJson();
+    }
+
+
 
 }

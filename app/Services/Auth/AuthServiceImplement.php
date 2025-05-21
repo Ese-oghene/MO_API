@@ -120,10 +120,9 @@ class AuthServiceImplement extends ServiceApi implements AuthService{
 				return $this->setCode(403)->setMessage("Forbidden");
 			}
 
-			// Revoke old tokens (optional)
 			$user->tokens()->delete();
 
-			// Generate Sanctum token
+			
 			$token = $user->createToken('auth_token')->plainTextToken;
 
 			return $this->setCode(200)

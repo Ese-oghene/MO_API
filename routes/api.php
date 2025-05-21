@@ -24,7 +24,15 @@ Route::post("register", [AuthController::class, "register"])->name("register");
 Route::post("login", [AuthController::class, "login"])->name("login");
 Route::post('/admin/login', [AuthController::class, 'adminLogin'])->name('admin.login');
 
+// PUBLIC PRODUCT ROUTE (NO AUTH REQUIRED)
+Route::get('/products/category/{name}', [ProductController::class, 'getByCategoryName']);
+Route::get('/products/subcategory/{name}', [ProductController::class, 'getBySubCategoryName']);
+Route::get('/products/public', [ProductController::class, 'publicIndex'])->name('products.public');
+Route::get('/products/{id}', [ProductController::class, 'show'])->name('products.show');
 
+// Not relevant routes
+// Route::get('/products/category/{id}', [ProductController::class, 'getByCategory']);
+// Route::get('/products/subcategory/{id}', [ProductController::class, 'getBySubCategory']);
 
 Route::middleware('auth:sanctum')->group(function () {
 
@@ -47,6 +55,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/show/{id}', [ProductController::class, 'show'])->name('admin.show');
         Route::patch('/update/{id}', [ProductController::class, 'update'])->name('admin.update');
         Route::delete('/delete/{id}', [ProductController::class, 'destroy'])->name('admin.destroy');
+         // Additional routes for filtering products
+
+         Route::get('/products/category/{id}', [ProductController::class, 'getByCategory']);
+         Route::get('/products/subcategory/{id}', [ProductController::class, 'getBySubCategory']);
+
+        // Not relevant routes
+        // Route::get('/by-category/{categoryId}', [ProductController::class, 'getByCategory'])->name('admin.byCategory');
+        // Route::get('/by-subcategory/{subCategoryId}', [ProductController::class, 'getBySubCategory'])->name('admin.bySubCategory');
     });
 
 
@@ -85,6 +101,14 @@ Route::middleware('auth:sanctum')->group(function () {
 
 //   }
 
-
+// {
+//     "name":"Kilishi",
+//     "description": "Bread is good for the body",
+//     "price": "100.99",
+//     "stock": 3,
+//     "category_name":"hot sale",
+//     "sub_category_name":"flash sale",
+//     "raw_material":"flour"
+// }
 
 
