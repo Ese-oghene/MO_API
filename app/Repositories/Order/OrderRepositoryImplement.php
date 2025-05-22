@@ -4,6 +4,7 @@ namespace App\Repositories\Order;
 
 use LaravelEasyRepository\Implementations\Eloquent;
 use App\Models\Order;
+use Illuminate\Support\Facades\DB;
 
 class OrderRepositoryImplement extends Eloquent implements OrderRepository{
 
@@ -21,19 +22,85 @@ class OrderRepositoryImplement extends Eloquent implements OrderRepository{
 
     public function createOrder(array $data)
     {
-        return $this->model->create($data);
+
+
+
+        return DB::transaction(function () use ($data) {
+
+            $orderItems = $data['order_items'] ?? [];
+            unset($data['order_items']);
+
+            $order = Order::create($data);
+
+            foreach ($orderItems as $item) {
+                $order->orderItems()->create([
+                    'product_id' => $item['product_id'],
+                    'quantity'   => $item['quantity'],
+                    'price'      => $item['price'],
+                ]);
+            }
+
+            return $order->load('orderItems');
+        });
+
+        // return $this->model->create($data);
     }
 
-    public function updateOrder(int $id, array $data)
+    // public function updateOrder(int $id, array $data)
+    // {
+    //     $order = $this->model->findOrFail($id);
+    //     $order->update($data);
+    //     return $order;
+    // }
+
+        private function getProductPrice(int $productId): float
     {
-        $order = $this->model->findOrFail($id);
-        $order->update($data);
-        return $order;
+        return \App\Models\Product::findOrFail($productId)->price;
     }
+
+
+    public function updateOrder(int $id, array $data)
+{
+    $order = $this->model->findOrFail($id);
+
+    // Update basic order fields
+    // if (isset($data['status']) && auth()->user()->role !== 'admin') {
+    // unset($data['status']); // regular users cannot change status
+    // }
+    $order->update([
+        'status' => $data['status'] ?? $order->status,
+    ]);
+
+    // Handle order items if provided
+    if (!empty($data['items'])) {
+        // Delete old items
+        $order->orderItems()->delete();
+
+        $total = 0;
+
+        // Recreate order items
+        foreach ($data['items'] as $item) {
+            $subtotal = $item['quantity'] * $this->getProductPrice($item['product_id']);
+            $order->orderItems()->create([
+                'product_id' => $item['product_id'],
+                'quantity'   => $item['quantity'],
+                'price'      => $this->getProductPrice($item['product_id']),
+            ]);
+
+            $total += $subtotal;
+        }
+
+        // Update the order total
+        $order->update(['total' => $total]);
+    }
+
+    return $order->load('orderItems');
+}
+
 
     public function findOrderById(int $id)
     {
-        return $this->model->with('items')->findOrFail($id);
+        return $this->model->with('orderItems')->findOrFail($id);
     }
 
     public function deleteOrder(int $id)
@@ -43,7 +110,7 @@ class OrderRepositoryImplement extends Eloquent implements OrderRepository{
 
     public function getAllWithItems()
     {
-        return $this->model->with('items')->get();
+        return $this->model->with('orderItems')->get();
     }
-    
+
 }

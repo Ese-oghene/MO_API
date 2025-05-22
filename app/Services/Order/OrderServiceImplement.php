@@ -2,9 +2,11 @@
 
 namespace App\Services\Order;
 
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Resources\OrderResource;
 use LaravelEasyRepository\ServiceApi;
 use App\Repositories\Order\OrderRepository;
-use App\Http\Resources\OrderResource;
 
 class OrderServiceImplement extends ServiceApi implements OrderService{
 
@@ -34,6 +36,9 @@ class OrderServiceImplement extends ServiceApi implements OrderService{
     public function createOrder(array $data): OrderService
     {
         try {
+
+            // Inject authenticated user ID
+             $data['user_id'] = Auth::id();
               $order = $this->orderRepository->createOrder($data);
 
             return $this->setCode(201)
@@ -50,7 +55,10 @@ class OrderServiceImplement extends ServiceApi implements OrderService{
     public function updateOrder(int $id, array $data): OrderService
     {
         try {
-          $order = $this->orderRepository->updateOrder($id, $data);
+
+            // Log::info('Update order data', $data);
+
+            $order = $this->orderRepository->updateOrder($id, $data);
 
             return $this->setCode(200)
                 ->setMessage("Order Updated Successfully")
