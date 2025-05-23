@@ -43,6 +43,10 @@ class OrderItemRepositoryImplement extends Eloquent implements OrderItemReposito
 
     public function getItemsByOrderId(int $orderId)
     {
-        return $this->model->where('order_id', $orderId)->get();
+         return $this->model
+        ->with(['product.category'])
+        ->where('order_id', $orderId)
+        ->get();
+        // return $this->model->where('order_id', $orderId)->get();
     }
 }

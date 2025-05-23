@@ -22,9 +22,6 @@ class OrderRepositoryImplement extends Eloquent implements OrderRepository{
 
     public function createOrder(array $data)
     {
-
-
-
         return DB::transaction(function () use ($data) {
 
             $orderItems = $data['order_items'] ?? [];
