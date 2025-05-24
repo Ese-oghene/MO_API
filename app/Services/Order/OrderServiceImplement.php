@@ -7,6 +7,9 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\OrderResource;
 use LaravelEasyRepository\ServiceApi;
 use App\Repositories\Order\OrderRepository;
+use App\Models\User;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Storage;
 
 class OrderServiceImplement extends ServiceApi implements OrderService{
 
@@ -123,4 +126,67 @@ class OrderServiceImplement extends ServiceApi implements OrderService{
                 ->setError($e->getMessage());
         }
     }
+
+
+    public function generateUserOrdersPdf(int $userId): OrderService
+{
+    try {
+        $user = User::findOrFail($userId);
+        $orders = $this->orderRepository->getOrdersByUserId($userId);
+
+        $pdf = Pdf::loadView('pdf.user-orders', [
+            'user' => $user,
+            'orders' => $orders
+        ]);
+
+        $fileName = "user_orders_{$userId}.pdf";
+        $path = "public/pdfs/{$fileName}";
+        Storage::put($path, $pdf->output());
+
+        // Generate full URL including scheme and host
+        $pdfUrl = url(Storage::url("pdfs/{$fileName}"));
+        // This produces something like: http://localhost:8000/storage/pdfs/user_orders_4.pdf
+
+        return $this->setCode(200)
+                    ->setMessage("PDF generated")
+                    ->setData([
+                        'url' => $pdfUrl
+                    ]);
+
+    } catch (\Exception $e) {
+        return $this->setCode(400)
+                    ->setMessage("Failed to generate PDF")
+                    ->setError($e->getMessage());
+    }
+}
+
+
+    // public function generateUserOrdersPdf(int $userId): OrderService
+    // {
+    //     try {
+    //         $user = User::findOrFail($userId);
+    //         $orders = $this->orderRepository->getOrdersByUserId($userId);
+
+    //         $pdf = Pdf::loadView('pdf.user-orders', [
+    //             'user' => $user,
+    //             'orders' => $orders
+    //         ]);
+
+    //         $fileName = "user_orders_{$userId}.pdf";
+    //         $path = "public/pdfs/{$fileName}";
+    //         Storage::put($path, $pdf->output());
+
+    //         return $this->setCode(200)
+    //                     ->setMessage("PDF generated")
+    //                     ->setData([
+    //                         'url' => Storage::url("pdfs/{$fileName}")
+    //                     ]);
+
+    //     } catch (\Exception $e) {
+    //         return $this->setCode(400)
+    //                     ->setMessage("Failed to generate PDF")
+    //                     ->setError($e->getMessage());
+    //     }
+    // }
+
 }

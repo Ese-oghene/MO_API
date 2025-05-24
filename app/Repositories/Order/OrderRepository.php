@@ -15,4 +15,6 @@ interface OrderRepository extends Repository{
     public function deleteOrder(int $id);
 
     public function getAllWithItems();
+    //get orders by user ID
+    public function getOrdersByUserId(int $userId);
 }

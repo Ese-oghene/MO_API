@@ -73,4 +73,16 @@ class OrderController extends Controller
     {
         return $this->orderService->deleteOrder($id)->toJson();
     }
+
+
+    /**
+     * Download PDF of User Orders
+     *
+     * Generates and returns a PDF of the specified user's orders.
+     */
+    public function downloadUserOrdersPdf(int $userId): JsonResponse
+    {
+        return $this->orderService->generateUserOrdersPdf($userId)->toJson();
+    }
+
 }

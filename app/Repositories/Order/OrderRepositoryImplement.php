@@ -40,36 +40,28 @@ class OrderRepositoryImplement extends Eloquent implements OrderRepository{
             return $order->load('orderItems');
         });
 
-        // return $this->model->create($data);
     }
 
-    // public function updateOrder(int $id, array $data)
-    // {
-    //     $order = $this->model->findOrFail($id);
-    //     $order->update($data);
-    //     return $order;
-    // }
+
 
         private function getProductPrice(int $productId): float
-    {
-        return \App\Models\Product::findOrFail($productId)->price;
-    }
+        {
+            return \App\Models\Product::findOrFail($productId)->price;
+        }
 
 
     public function updateOrder(int $id, array $data)
 {
     $order = $this->model->findOrFail($id);
 
-    // Update basic order fields
-    // if (isset($data['status']) && auth()->user()->role !== 'admin') {
-    // unset($data['status']); // regular users cannot change status
-    // }
+    // Update order status if provided, otherwise keep the current status
     $order->update([
         'status' => $data['status'] ?? $order->status,
     ]);
 
     // Handle order items if provided
     if (!empty($data['items'])) {
+
         // Delete old items
         $order->orderItems()->delete();
 
@@ -109,5 +101,15 @@ class OrderRepositoryImplement extends Eloquent implements OrderRepository{
     {
         return $this->model->with('orderItems')->get();
     }
+
+    
+    public function getOrdersByUserId(int $userId)
+    {
+        return $this->model
+            ->with('orderItems.product.category')
+            ->where('user_id', $userId)
+            ->get();
+    }
+
 
 }

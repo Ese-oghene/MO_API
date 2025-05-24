@@ -15,4 +15,6 @@ interface OrderService extends BaseService{
     public function findOrderById(int $id);
 
     public function getAllWithItems();
+
+    public function generateUserOrdersPdf(int $userId);
 }

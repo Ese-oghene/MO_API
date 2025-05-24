@@ -88,8 +88,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('{id}', [OrderController::class, 'show']);
         Route::patch('{id}', [OrderController::class, 'update']);
         Route::delete('{id}', [OrderController::class, 'destroy']);
+        Route::get('/pdf/{userId}', [OrderController::class, 'downloadUserOrdersPdf']);
+        // Route::get('/admin/users/{user}/orders/pdf', [OrderController::class, 'downloadUserOrdersPdf']);
+        // Route::get('/orders/pdf/{userId}', [OrderController::class, 'downloadUserOrdersPdf']); 170|BBSpkLzlXlITFycaabOLxwr5NC8OEN7gmWXLwDwN3db2a592
+
     });
-    
+
 
 });
 
