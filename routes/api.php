@@ -24,13 +24,13 @@ use App\Http\Controllers\Api\OrderItemController;
 
 Route::post("register", [AuthController::class, "register"])->name("register");
 Route::post("login", [AuthController::class, "login"])->name("login");
-Route::post('/admin/login', [AuthController::class, 'adminLogin'])->name('admin.login');
+Route::post('/admin/login', [AuthController::class, 'adminLogin']);
 
 // PUBLIC PRODUCT ROUTE (NO AUTH REQUIRED)
 Route::get('/products/category/{name}', [ProductController::class, 'getByCategoryName']);
 Route::get('/products/subcategory/{name}', [ProductController::class, 'getBySubCategoryName']);
-Route::get('/products/public', [ProductController::class, 'publicIndex'])->name('products.public');
-Route::get('/products/{id}', [ProductController::class, 'show'])->name('products.show');
+Route::get('/products/public', [ProductController::class, 'publicIndex']);
+Route::get('/products/{id}', [ProductController::class, 'show']);
 
 // Not relevant routes
 // Route::get('/products/category/{id}', [ProductController::class, 'getByCategory']);
@@ -45,7 +45,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
      // General User Logout
-    Route::post("logout", [AuthController::class, "logout"])->name("logout");
+    Route::post("logout", [AuthController::class, "logout"]);
 
     // User Order Management
     Route::prefix('orders')->group(function () {
@@ -65,16 +65,16 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     // Admin Logout
-    Route::post("/admin/logout", [AuthController::class, "logout"])->name("admin.logout");
+    Route::post("/admin/logout", [AuthController::class, "logout"]);
 
 
     // Admin Product Management (only admins should access these)
     Route::prefix('admin')->middleware('role:admin')->group(function () {
-        Route::get('/index', [ProductController::class, 'index'])->name('admin.index');
-        Route::post('/store', [ProductController::class, 'store'])->name('admin.store');
-        Route::get('/show/{id}', [ProductController::class, 'show'])->name('admin.show');
-        Route::patch('/update/{id}', [ProductController::class, 'update'])->name('admin.update');
-        Route::delete('/delete/{id}', [ProductController::class, 'destroy'])->name('admin.destroy');
+        Route::get('/index', [ProductController::class, 'index']);
+        Route::post('/store', [ProductController::class, 'store']);
+        Route::get('/show/{id}', [ProductController::class, 'show']);
+        Route::patch('/update/{id}', [ProductController::class, 'update']);
+        Route::delete('/delete/{id}', [ProductController::class, 'destroy']);
          // Additional routes for filtering products
 
          Route::get('/products/category/{id}', [ProductController::class, 'getByCategory']);
@@ -89,8 +89,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::patch('{id}', [OrderController::class, 'update']);
         Route::delete('{id}', [OrderController::class, 'destroy']);
         Route::get('/pdf/{userId}', [OrderController::class, 'downloadUserOrdersPdf']);
-        // Route::get('/admin/users/{user}/orders/pdf', [OrderController::class, 'downloadUserOrdersPdf']);
-        // Route::get('/orders/pdf/{userId}', [OrderController::class, 'downloadUserOrdersPdf']); 170|BBSpkLzlXlITFycaabOLxwr5NC8OEN7gmWXLwDwN3db2a592
 
     });
 
