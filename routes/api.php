@@ -99,42 +99,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
 
-//  user: any = null;
 
-//   constructor(private http: HttpClient) {}
-
-//   ngOnInit(): void {
-//     const url = new URL(window.location.href);
-//     const tokenFromUrl = url.searchParams.get('token');
-
-//     if (tokenFromUrl) {
-//       localStorage.setItem('auth_token', tokenFromUrl);
-//       console.log('Token set from query param');
-
-//       window.history.replaceState({}, '', window.location.pathname);
-//     }
-//     this.http.get<{ user: any }>('http://127.0.0.1:8000/api/me').subscribe({
-
-//       next: (res) => {
-//         this.user = res.user;
-//         // this.user = res;
-//         console.log('Fetched user:', this.user);
-//       },
-//       error: (err) => {
-//         console.error('Failed to fetch user', err);
-//       }
-//     });
-
-//   }
-
-// {
-//     "name":"Kilishi",
-//     "description": "Bread is good for the body",
-//     "price": "100.99",
-//     "stock": 3,
-//     "category_name":"hot sale",
-//     "sub_category_name":"flash sale",
-//     "raw_material":"flour"
-// }
 
 
