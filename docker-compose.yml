@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  # APP SERVER
+  laravel-docker-app:
+    container_name: laravel-docker-app
+    build: .
+    volumes:
+      - ./dockerapp:/var/www/html
+    ports:
+      - "9009:80"
+    depends_on:
+      - mysql_db
+
+  # DATA SERVER (MySQL)
+  mysql_db:
+    image: mysql:latest  # Fixed: "lastest" → "latest"
+    container_name: mysql_db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: mo_api  # Match .env (DB_DATABASE)
+    ports:
+      - "3309:3306"
+
+  # PHPMYADMIN
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: phpmyadmin
+    ports:
+      - "9002:80"
+    environment:
+      PMA_ARBITRARY: 1
+      PMA_HOST: mysql_db

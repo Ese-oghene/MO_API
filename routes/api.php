@@ -57,10 +57,10 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::prefix('orderItems')->group(function () {
-        Route::get('/order/{orderId}', [OrderItemController::class, 'index']); // Get all items by order ID
-        Route::get('{id}', [OrderItemController::class, 'show']);              // Get single item by item ID
-        Route::post('/', [OrderItemController::class, 'store']);               // Create new item
-        Route::patch('{id}', [OrderItemController::class, 'update']);            // Update item
+        Route::get('/order/{orderId}', [OrderItemController::class, 'index']);
+        Route::get('{id}', [OrderItemController::class, 'show']);
+        Route::post('/', [OrderItemController::class, 'store']);
+        Route::patch('{id}', [OrderItemController::class, 'update']);         
         Route::delete('{id}', [OrderItemController::class, 'destroy']);
     });
 
@@ -91,7 +91,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/pdf/{userId}', [OrderController::class, 'downloadUserOrdersPdf']);
 
     });
-
 
 });
 
